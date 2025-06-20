@@ -10,14 +10,22 @@ import OfficialUpdates from './components/OfficialUpdates';
 
 const socket = io('http://localhost:5000');
 
+// Add at the top, after imports
+type RealTimeUpdate = {
+  type: string;
+  message: string;
+  timestamp: string;
+  data: any;
+};
+
 function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [selectedDisaster, setSelectedDisaster] = useState(null);
-  const [realTimeUpdates, setRealTimeUpdates] = useState([]);
+  const [selectedDisaster, setSelectedDisaster] = useState<any>(null);
+  const [realTimeUpdates, setRealTimeUpdates] = useState<RealTimeUpdate[]>([]);
 
   useEffect(() => {
     // WebSocket event listeners
-    socket.on('disaster_created', (data) => {
+    socket.on('disaster_created', (data: any) => {
       setRealTimeUpdates(prev => [...prev.slice(-4), {
         type: 'disaster_created',
         message: `New disaster reported: ${data.disaster.title}`,
@@ -26,7 +34,7 @@ function App() {
       }]);
     });
 
-    socket.on('disaster_updated', (data) => {
+    socket.on('disaster_updated', (data: any) => {
       setRealTimeUpdates(prev => [...prev.slice(-4), {
         type: 'disaster_updated',
         message: `Disaster updated: ${data.disaster.title}`,
@@ -35,7 +43,7 @@ function App() {
       }]);
     });
 
-    socket.on('social_media_updated', (data) => {
+    socket.on('social_media_updated', (data: any) => {
       setRealTimeUpdates(prev => [...prev.slice(-4), {
         type: 'social_media',
         message: `${data.count} new social media reports`,
@@ -44,7 +52,7 @@ function App() {
       }]);
     });
 
-    socket.on('resources_updated', (data) => {
+    socket.on('resources_updated', (data: any) => {
       setRealTimeUpdates(prev => [...prev.slice(-4), {
         type: 'resources',
         message: `Resources updated near ${data.location.lat}, ${data.location.lon}`,
